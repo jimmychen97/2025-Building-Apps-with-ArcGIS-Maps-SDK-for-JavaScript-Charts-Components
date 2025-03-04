@@ -1,4 +1,4 @@
-import { StrictMode, useRef, useEffect } from "react";
+import { StrictMode, useRef, useEffect, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { createFeatureLayer } from "./functions/create-feature-layer";
 
@@ -18,28 +18,26 @@ defineChartsElements(window, {
 const App = () => {
   const chartRef = useRef(null);
 
-  useEffect(() => {
-    const initializeChart = async () => {
-      const layer = await createFeatureLayer(
-        "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/ChicagoCr/FeatureServer/0"
-      );
+  const initScatterplot = useCallback(async () => {
+    const layer = await createFeatureLayer(
+      "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/ChicagoCr/FeatureServer/0"
+    );
 
-      const scatterplotModel = new ScatterPlotModel();
-      await scatterplotModel.setup({ layer });
+    const scatterplotModel = new ScatterPlotModel();
+    await scatterplotModel.setup({ layer });
 
-      await scatterplotModel.setXAxisField("Ward");
-      await scatterplotModel.setYAxisField("Beat");
+    await scatterplotModel.setXAxisField("Ward");
+    await scatterplotModel.setYAxisField("Beat");
 
-      const config = scatterplotModel.getConfig();
+    const config = scatterplotModel.getConfig();
 
-      if (chartRef.current) {
-        chartRef.current.layer = layer;
-        chartRef.current.model = config;
-      }
-    };
-
-    initializeChart();
+    chartRef.current.layer = layer;
+    chartRef.current.model = config;
   }, []);
+
+  useEffect(() => {
+    initScatterplot().catch(console.error);
+  }, [initScatterplot]);
 
   return (
     <StrictMode>
