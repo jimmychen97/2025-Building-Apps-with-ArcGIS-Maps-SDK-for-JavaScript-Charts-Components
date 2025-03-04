@@ -17,8 +17,10 @@ defineChartsElements(window, {
 
 const App = () => {
   const scatterplotRef = useRef(null);
+  const barChartRef = useRef(null);
+  const mapRef = useRef(null);
 
-  const initChartWithModel = useCallback(async () => {
+  const initScatterplot = useCallback(async () => {
     const layer = await createFeatureLayer(
       "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/ChicagoCr/FeatureServer/0"
     );
@@ -35,17 +37,36 @@ const App = () => {
     scatterplotRef.current.model = config;
   }, []);
 
-  useEffect(() => {
-    initChartWithModel().catch(console.error);
-  }, [initChartWithModel]);
+  const initBarChart = useCallback(async (map) => {
+    const featureLayer = map.layers.find(
+      (layer) => layer.title === "CollegeScorecard"
+    );
+    await featureLayer.load();
+
+    const chartConfig = featureLayer.charts[0];
+    barChartRef.current.layer = featureLayer;
+    barChartRef.current.model = chartConfig;
+  }, []);
+
+  const handleMapViewReady = useCallback(
+    (event) => {
+      const initialize = async () => {
+        const { map, view } = event.target;
+
+        await initScatterplot();
+        await initBarChart(map);
+      };
+
+      initialize().catch(console.error);
+    },
+    [initScatterplot, initBarChart]
+  );
 
   return (
     <StrictMode>
       <arcgis-map
         item-id="f2481ef191924872be8897179f73d55c"
-        onarcgisViewReadyChange={(event) => {
-          console.log("MapView ready", event);
-        }}
+        onarcgisViewReadyChange={handleMapViewReady}
       ></arcgis-map>
       <calcite-tabs bordered layout="inline">
         <calcite-tab-nav slot="title-group">
@@ -57,7 +78,11 @@ const App = () => {
             <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
           </arcgis-chart>
         </calcite-tab>
-        <calcite-tab></calcite-tab>
+        <calcite-tab>
+          <arcgis-chart ref={barChartRef}>
+            <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
+          </arcgis-chart>
+        </calcite-tab>
       </calcite-tabs>
     </StrictMode>
   );
