@@ -16,9 +16,9 @@ defineChartsElements(window, {
 });
 
 const App = () => {
-  const chartRef = useRef(null);
+  const scatterplotRef = useRef(null);
 
-  const initScatterplot = useCallback(async () => {
+  const initChartWithModel = useCallback(async () => {
     const layer = await createFeatureLayer(
       "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/ChicagoCr/FeatureServer/0"
     );
@@ -31,19 +31,34 @@ const App = () => {
 
     const config = scatterplotModel.getConfig();
 
-    chartRef.current.layer = layer;
-    chartRef.current.model = config;
+    scatterplotRef.current.layer = layer;
+    scatterplotRef.current.model = config;
   }, []);
 
   useEffect(() => {
-    initScatterplot().catch(console.error);
-  }, [initScatterplot]);
+    initChartWithModel().catch(console.error);
+  }, [initChartWithModel]);
 
   return (
     <StrictMode>
-      <arcgis-chart ref={chartRef}>
-        <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
-      </arcgis-chart>
+      <arcgis-map
+        item-id="f2481ef191924872be8897179f73d55c"
+        onarcgisViewReadyChange={(event) => {
+          console.log("MapView ready", event);
+        }}
+      ></arcgis-map>
+      <calcite-tabs bordered layout="inline">
+        <calcite-tab-nav slot="title-group">
+          <calcite-tab-title selected>Scatterplot</calcite-tab-title>
+          <calcite-tab-title>Bar chart</calcite-tab-title>
+        </calcite-tab-nav>
+        <calcite-tab selected>
+          <arcgis-chart ref={scatterplotRef}>
+            <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
+          </arcgis-chart>
+        </calcite-tab>
+        <calcite-tab></calcite-tab>
+      </calcite-tabs>
     </StrictMode>
   );
 };

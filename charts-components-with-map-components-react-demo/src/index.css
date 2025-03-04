@@ -1,1 +1,20 @@
 @import "https://js.arcgis.com/4.32/@arcgis/core/assets/esri/themes/dark/main.css";
+
+html,
+body {
+  margin: 0;
+}
+
+arcgis-map {
+  display: block;
+  height: 100vh;
+}
+
+calcite-tabs {
+  background-color: white;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  height: 45%;
+  width: 60%;
+}
