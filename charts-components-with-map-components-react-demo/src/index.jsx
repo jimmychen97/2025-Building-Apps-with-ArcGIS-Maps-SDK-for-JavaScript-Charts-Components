@@ -56,6 +56,7 @@ const App = () => {
     scatterplotRef.current.model = scatterplotConfig;
   }, []);
 
+  // sync up selection between the bar chart and the map
   const setupBarChartSelection = useCallback((map, view) => {
     const featureLayerViews = view.layerViews;
 
@@ -68,6 +69,7 @@ const App = () => {
     });
   }, []);
 
+  // enable filter by extent on the bar chart
   const setupActionBarFilterByExtent = useCallback((view) => {
     barChartRef.current.view = view;
 
