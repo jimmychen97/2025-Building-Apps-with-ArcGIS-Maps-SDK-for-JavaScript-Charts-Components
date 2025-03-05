@@ -20,21 +20,22 @@ const App = () => {
   const barChartRef = useRef(null);
   const mapRef = useRef(null);
 
-  const initScatterplot = useCallback(async () => {
-    const layer = await createFeatureLayer(
-      "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/ChicagoCr/FeatureServer/0"
+  const initScatterplot = useCallback(async (map) => {
+    const featureLayer = map.layers.find(
+      (layer) => layer.title === "CollegeScorecard"
     );
+    await featureLayer.load();
 
     const scatterplotModel = new ScatterPlotModel();
-    await scatterplotModel.setup({ layer });
+    await scatterplotModel.setup({ layer: featureLayer });
 
-    await scatterplotModel.setXAxisField("Ward");
-    await scatterplotModel.setYAxisField("Beat");
+    await scatterplotModel.setXAxisField("Cost");
+    await scatterplotModel.setYAxisField("Earnings");
 
-    const config = scatterplotModel.getConfig();
+    const scatterplotConfig = scatterplotModel.getConfig();
 
-    scatterplotRef.current.layer = layer;
-    scatterplotRef.current.model = config;
+    scatterplotRef.current.layer = featureLayer;
+    scatterplotRef.current.model = scatterplotConfig;
   }, []);
 
   const initBarChart = useCallback(async (map) => {
@@ -53,13 +54,13 @@ const App = () => {
       const initialize = async () => {
         const { map, view } = event.target;
 
-        await initScatterplot();
+        await initScatterplot(map);
         await initBarChart(map);
       };
 
       initialize().catch(console.error);
     },
-    [initScatterplot, initBarChart]
+    [initBarChart]
   );
 
   return (
@@ -70,16 +71,16 @@ const App = () => {
       ></arcgis-map>
       <calcite-tabs bordered layout="inline">
         <calcite-tab-nav slot="title-group">
-          <calcite-tab-title selected>Scatterplot</calcite-tab-title>
-          <calcite-tab-title>Bar chart</calcite-tab-title>
+          <calcite-tab-title selected>Bar Chart</calcite-tab-title>
+          <calcite-tab-title>Scatterplot</calcite-tab-title>
         </calcite-tab-nav>
         <calcite-tab selected>
-          <arcgis-chart ref={scatterplotRef}>
+          <arcgis-chart ref={barChartRef}>
             <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
           </arcgis-chart>
         </calcite-tab>
         <calcite-tab>
-          <arcgis-chart ref={barChartRef}>
+          <arcgis-chart ref={scatterplotRef}>
             <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
           </arcgis-chart>
         </calcite-tab>
