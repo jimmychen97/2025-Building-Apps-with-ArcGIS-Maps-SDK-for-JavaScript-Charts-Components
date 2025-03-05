@@ -1,4 +1,4 @@
-@import "https://js.arcgis.com/4.32/@arcgis/core/assets/esri/themes/dark/main.css";
+@import "https://js.arcgis.com/4.32/@arcgis/core/assets/esri/themes/light/main.css";
 
 html,
 body {
@@ -11,7 +11,7 @@ arcgis-map {
 }
 
 arcgis-chart {
-  height: 400px;
+  height: 100%;
 }
 
 calcite-tabs {
