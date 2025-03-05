@@ -3,8 +3,10 @@ import { createRoot } from "react-dom/client";
 import { createFeatureLayer } from "./functions/create-feature-layer";
 
 import "@arcgis/map-components/components/arcgis-map";
+import "@arcgis/map-components/components/arcgis-home";
 import "@arcgis/map-components/components/arcgis-search";
 import "@arcgis/map-components/components/arcgis-legend";
+import "@arcgis/map-components/components/arcgis-feature-table";
 
 import { ScatterPlotModel } from "@arcgis/charts-model";
 import { defineCustomElements as defineCalciteElements } from "@esri/calcite-components/dist/loader";
@@ -35,6 +37,7 @@ const App = () => {
 
     barChartRef.current.layer = featureLayer;
     barChartRef.current.model = barChartConfig;
+    barChartRef.current.hideLoaderAnimation = true;
   }, []);
 
   // use the feature layer from Map Viewer to configure a new chart
@@ -107,41 +110,51 @@ const App = () => {
 
   return (
     <StrictMode>
-      <arcgis-map
-        item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
-        onarcgisViewReadyChange={handleMapViewReady}
-      >
-        <arcgis-search position="top-right"></arcgis-search>
-        <arcgis-legend
-          position="bottom-right"
-          legend-style="classic"
-        ></arcgis-legend>
-      </arcgis-map>
-      <calcite-tabs bordered layout="inline">
-        <calcite-tab-nav slot="title-group">
-          <calcite-tab-title selected>
-            <calcite-icon icon="graph-bar" />
-            Bar Chart
-          </calcite-tab-title>
-          <calcite-tab-title>
-            <calcite-icon icon="graph-scatter-plot" />
-            Scatterplot
-          </calcite-tab-title>
-        </calcite-tab-nav>
-        <calcite-tab selected>
-          <arcgis-chart ref={barChartRef}>
-            <arcgis-charts-action-bar
-              slot="action-bar"
-              ref={barChartActionBarRef}
-            ></arcgis-charts-action-bar>
-          </arcgis-chart>
-        </calcite-tab>
-        <calcite-tab>
-          <arcgis-chart ref={scatterplotRef}>
-            <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
-          </arcgis-chart>
-        </calcite-tab>
-      </calcite-tabs>
+      <div id="map-container">
+        <arcgis-map
+          id="my-map"
+          item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
+          onarcgisViewReadyChange={handleMapViewReady}
+        >
+          <arcgis-home position="bottom-right"></arcgis-home>
+          <arcgis-search position="top-left"></arcgis-search>
+          <arcgis-legend
+            position="bottom-left"
+            legend-style="classic"
+          ></arcgis-legend>
+        </arcgis-map>
+      </div>
+      <div id="tabs-container">
+        <calcite-tabs bordered layout="inline">
+          <calcite-tab-nav slot="title-group">
+            <calcite-tab-title selected>
+              <calcite-icon icon="graph-bar" />
+              Bar Chart
+            </calcite-tab-title>
+            <calcite-tab-title>
+              <calcite-icon icon="graph-scatter-plot" />
+              Scatterplot
+            </calcite-tab-title>
+          </calcite-tab-nav>
+          <calcite-tab selected>
+            <arcgis-chart ref={barChartRef}>
+              <arcgis-charts-action-bar
+                slot="action-bar"
+                ref={barChartActionBarRef}
+              ></arcgis-charts-action-bar>
+            </arcgis-chart>
+          </calcite-tab>
+          <calcite-tab>
+            <arcgis-chart ref={scatterplotRef}>
+              <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
+            </arcgis-chart>
+          </calcite-tab>
+        </calcite-tabs>
+        <arcgis-feature-table
+          reference-element="my-map"
+          layer-url="https://services1.arcgis.com/hLJbHVT9ZrDIzK0I/arcgis/rest/services/CollegeScorecard_0/FeatureServer/0"
+        ></arcgis-feature-table>
+      </div>
     </StrictMode>
   );
 };

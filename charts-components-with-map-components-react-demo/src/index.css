@@ -1,24 +1,34 @@
 @import "https://js.arcgis.com/4.32/@arcgis/core/assets/esri/themes/light/main.css";
 
+body,
 html,
-body {
+#root {
+  height: 100%;
+  width: 100%;
   margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
 }
 
-arcgis-map {
-  display: block;
-  height: 100vh;
+#map-container {
+  flex: 0 0 60%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+#tabs-container {
+  flex: 0 0 40%;
+  padding: 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 arcgis-chart {
-  height: 100%;
+  height: 500px;
 }
 
-calcite-tabs {
-  background-color: white;
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  height: 50%;
-  width: 60%;
+arcgis-feature-table {
+  height: 100%;
 }
