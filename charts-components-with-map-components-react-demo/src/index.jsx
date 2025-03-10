@@ -87,6 +87,23 @@ const App = () => {
     );
   }, []);
 
+  // highlight chart data base on map selection
+  const handleMapViewClick = useCallback((event) => {
+    const { view } = event.target;
+
+    let screenPoints = event.detail.screenPoint;
+    view.hitTest(screenPoints).then(getFeatures);
+
+    function getFeatures(response) {
+      const selectedFeatureOID =
+        response.results[0].graphic.attributes["ObjectId"];
+
+      barChartRef.current.selectionData = {
+        selectionOIDs: [selectedFeatureOID],
+      };
+    }
+  }, []);
+
   const handleMapViewReady = useCallback(
     (event) => {
       const initialize = async () => {
@@ -115,6 +132,7 @@ const App = () => {
           id="my-map"
           item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
           onarcgisViewReadyChange={handleMapViewReady}
+          onarcgisViewClick={handleMapViewClick}
         >
           <arcgis-home position="bottom-right"></arcgis-home>
           <arcgis-search position="top-left"></arcgis-search>
