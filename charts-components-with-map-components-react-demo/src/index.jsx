@@ -6,7 +6,6 @@ import "@arcgis/map-components/components/arcgis-map";
 import "@arcgis/map-components/components/arcgis-home";
 import "@arcgis/map-components/components/arcgis-search";
 import "@arcgis/map-components/components/arcgis-legend";
-import "@arcgis/map-components/components/arcgis-feature-table";
 
 import { ScatterPlotModel } from "@arcgis/charts-model";
 import { defineCustomElements as defineCalciteElements } from "@esri/calcite-components/dist/loader";
@@ -127,21 +126,19 @@ const App = () => {
 
   return (
     <StrictMode>
-      <div id="map-container">
-        <arcgis-map
-          id="my-map"
-          item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
-          onarcgisViewReadyChange={handleMapViewReady}
-          onarcgisViewClick={handleMapViewClick}
-        >
-          <arcgis-home position="bottom-right"></arcgis-home>
-          <arcgis-search position="top-left"></arcgis-search>
-          <arcgis-legend
-            position="bottom-left"
-            legend-style="classic"
-          ></arcgis-legend>
-        </arcgis-map>
-      </div>
+      <arcgis-map
+        id="my-map"
+        item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
+        onarcgisViewReadyChange={handleMapViewReady}
+        onarcgisViewClick={handleMapViewClick}
+      >
+        <arcgis-home position="top-right"></arcgis-home>
+        <arcgis-search position="top-left"></arcgis-search>
+        <arcgis-legend
+          position="bottom-left"
+          legend-style="classic"
+        ></arcgis-legend>
+      </arcgis-map>
       <div id="tabs-container">
         <calcite-tabs bordered layout="inline">
           <calcite-tab-nav slot="title-group">
@@ -168,10 +165,6 @@ const App = () => {
             </arcgis-chart>
           </calcite-tab>
         </calcite-tabs>
-        <arcgis-feature-table
-          reference-element="my-map"
-          layer-url="https://services1.arcgis.com/hLJbHVT9ZrDIzK0I/arcgis/rest/services/CollegeScorecard_0/FeatureServer/0"
-        ></arcgis-feature-table>
       </div>
     </StrictMode>
   );

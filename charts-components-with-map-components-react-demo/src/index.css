@@ -7,28 +7,19 @@ html,
   width: 100%;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: row;
 }
 
-#map-container {
-  flex: 0 0 60%;
-  padding: 5px;
-  box-sizing: border-box;
+arcgis-map {
+  display: block;
+  height: 100vh;
 }
 
 #tabs-container {
-  flex: 0 0 40%;
-  padding: 5px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-arcgis-chart {
-  height: 500px;
-}
-
-arcgis-feature-table {
-  height: 100%;
+  position: absolute;
+  bottom: 20px;
+  right: 10px;
+  height: 50%;
+  width: 40%;
+  background-color: #ffffff;
+  border-radius: 5px;
 }
