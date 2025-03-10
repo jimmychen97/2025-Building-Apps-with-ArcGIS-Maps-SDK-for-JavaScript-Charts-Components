@@ -1,14 +1,14 @@
-# Charts components React using Vite sample (beta)
+# React demo with charts components and map components
 
-📁 **[Click here to download this directory as a ZIP file](https://esri.github.io/jsapi-resources/zips/charts-components-sample-react.zip)** 📁
+📁 **[Click here to download this directory as a ZIP file](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2Fjimmychen97%2F2025-Building-Apps-with-ArcGIS-Maps-SDK-for-JavaScript-Charts-Components%2Ftree%2Fmain%2Fcharts-components-with-map-components-react-demo)** 📁
 
-This project showcases how to use charts components with [React](https://react.dev/).
+This project showcases how to use charts components and map components. Including interaction such as selection sync up between chart and map, filter by extent and color matching with the layer. 
 
 ## Get started
 
-Run `npm install` and then start adding modules.
+- Run `yarn` or `npm install` and then start adding modules.
 
-For a list of all available `npm` commands see `scripts` in `package.json`, e.g. `npm run build`.
+- Run `yarn dev` or `npm run dev` to start the development server. 
 
 ## Loading All Components
 
