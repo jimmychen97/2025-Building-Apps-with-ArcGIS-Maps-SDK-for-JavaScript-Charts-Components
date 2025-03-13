@@ -9,7 +9,7 @@ import "@arcgis/map-components/components/arcgis-legend";
 import { defineCustomElements as defineCalciteElements } from "@esri/calcite-components/dist/loader";
 import { defineCustomElements as defineChartsElements } from "@arcgis/charts-components/dist/loader";
 
-import { ScatterPlotModel } from "@arcgis/charts-model";
+import { HistogramModel } from "@arcgis/charts-model";
 
 import "./index.css";
 
@@ -35,8 +35,8 @@ const App = () => {
   const barChartRef = useRef(null);
   const barChartActionBarRef = useRef(null);
 
-  // Scatterplot reference
-  const scatterplotRef = useRef(null);
+  // Histogram reference
+  const histogramRef = useRef(null);
 
   // 1. Load an existing chart that was configured in Map Viewer, saved on the layer
   const initBarChart = useCallback(async (map, view) => {
@@ -45,21 +45,30 @@ const App = () => {
 
     barChartRef.current.layer = featureLayer;
     barChartRef.current.model = barChartConfig;
+
+    // set the chart view to the current map view
     barChartRef.current.view = view;
-    // barChartRef.current.hideLoaderAnimation = true;
+    barChartRef.current.hideLoaderAnimation = true;
   }, []);
 
-  // 2. Use the feature layer from Map Viewer to configure a new scatterplot chart
-  const initScatterplot = useCallback(async (map) => {
+  // 2. Use the feature layer from Map Viewer to configure a new histogram
+  const initHistogram = useCallback(async (map) => {
     const featureLayer = await getFeatureLayer(map);
-    const scatterplotModel = new ScatterPlotModel();
-    await scatterplotModel.setup({ layer: featureLayer });
+    const histogramModel = new HistogramModel();
+    await histogramModel.setup({ layer: featureLayer });
 
-    await scatterplotModel.setXAxisField("Cost");
-    await scatterplotModel.setYAxisField("Earnings");
+    await histogramModel.setNumericField("SAT_Score_Average");
+    histogramModel.setShowMeanOverlay(true);
+    histogramModel.setShowMedianOverlay(true);
+    histogramModel.setShowNormalDistOverlay(true);
+    histogramModel.setShowStandardDevOverlay(true);
+    histogramModel.setBinColor({
+      color: [122, 122, 122, 255],
+    });
+    histogramModel.setLegendPosition("bottom");
 
-    scatterplotRef.current.layer = featureLayer;
-    scatterplotRef.current.model = scatterplotModel.getConfig();
+    histogramRef.current.layer = featureLayer;
+    histogramRef.current.model = histogramModel.getConfig();
   }, []);
 
   // 3. Sync up selection between the bar chart and the map
@@ -97,13 +106,13 @@ const App = () => {
         const { map, view } = event.target;
 
         await initBarChart(map, view);
-        await initScatterplot(map);
+        await initHistogram(map);
         setupBarChartSelection(map, view);
       };
 
       initialize().catch(console.error);
     },
-    [initBarChart, initScatterplot, setupBarChartSelection]
+    [initBarChart, initHistogram, setupBarChartSelection]
   );
 
   return (
@@ -133,16 +142,16 @@ const App = () => {
         <div id="tabs-container">
           <calcite-tabs bordered layout="inline">
             <calcite-tab-nav slot="title-group">
-              <calcite-tab-title selected>
+              <calcite-tab-title>
                 <calcite-icon icon="graph-bar" />
                 Bar Chart
               </calcite-tab-title>
-              <calcite-tab-title>
-                <calcite-icon icon="graph-scatter-plot" />
-                Scatterplot
+              <calcite-tab-title selected>
+                <calcite-icon icon="graph-histogram" />
+                Histogram
               </calcite-tab-title>
             </calcite-tab-nav>
-            <calcite-tab selected>
+            <calcite-tab>
               <arcgis-chart ref={barChartRef}>
                 <arcgis-charts-action-bar
                   slot="action-bar"
@@ -150,8 +159,8 @@ const App = () => {
                 ></arcgis-charts-action-bar>
               </arcgis-chart>
             </calcite-tab>
-            <calcite-tab>
-              <arcgis-chart ref={scatterplotRef}></arcgis-chart>
+            <calcite-tab selected>
+              <arcgis-chart ref={histogramRef}></arcgis-chart>
             </calcite-tab>
           </calcite-tabs>
         </div>
