@@ -63,9 +63,11 @@ const App = () => {
     histogramModel.setShowNormalDistOverlay(true);
     histogramModel.setShowStandardDevOverlay(true);
     histogramModel.setBinColor({
-      color: [122, 122, 122, 255],
+      color: [96, 96, 96, 100],
     });
+    histogramModel.setBinCount(36);
     histogramModel.setLegendPosition("bottom");
+    histogramModel.setDataLabelsVisibility(true);
 
     histogramRef.current.layer = featureLayer;
     histogramRef.current.model = histogramModel.getConfig();
