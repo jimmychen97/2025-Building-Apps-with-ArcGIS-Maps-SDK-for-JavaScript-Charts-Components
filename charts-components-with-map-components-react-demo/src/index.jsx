@@ -33,89 +33,77 @@ const App = () => {
 
   // Bar chart and action bar references
   const barChartRef = useRef(null);
-  const barChartActionBarRef = useRef(null);
 
   // Histogram reference
   const histogramRef = useRef(null);
 
   // 1. Load an existing chart that was configured in Map Viewer, saved on the layer
   const initBarChart = useCallback(async (map, view) => {
-    const featureLayer = await getFeatureLayer(map);
-    const barChartConfig = featureLayer.charts[0];
-
-    barChartRef.current.layer = featureLayer;
-    barChartRef.current.model = barChartConfig;
-
-    // set the chart view to the current map view
-    barChartRef.current.view = view;
-    barChartRef.current.hideLoaderAnimation = true;
+    // const featureLayer = await getFeatureLayer(map);
+    // const barChartConfig = featureLayer.charts[0];
+    // barChartRef.current.layer = featureLayer;
+    // barChartRef.current.model = barChartConfig;
+    // // set the chart view to the current map view
+    // barChartRef.current.view = view;
+    // barChartRef.current.hideLoaderAnimation = true;
   }, []);
 
   // 2. Use the feature layer from Map Viewer to configure a new histogram
   const initHistogram = useCallback(async (map) => {
-    const featureLayer = await getFeatureLayer(map);
-    const histogramModel = new HistogramModel();
-    await histogramModel.setup({ layer: featureLayer });
-
-    await histogramModel.setNumericField("SAT_Score_Average");
-    histogramModel.setShowMeanOverlay(true);
-    histogramModel.setShowMedianOverlay(true);
-    histogramModel.setShowNormalDistOverlay(true);
-    histogramModel.setShowStandardDevOverlay(true);
-    histogramModel.setBinColor({
-      color: [96, 96, 96, 100],
-    });
-    histogramModel.setBinCount(36);
-    histogramModel.setLegendPosition("bottom");
-    histogramModel.setDataLabelsVisibility(true);
-
-    histogramRef.current.layer = featureLayer;
-    histogramRef.current.model = histogramModel.getConfig();
+    // const featureLayer = await getFeatureLayer(map);
+    // const histogramModel = new HistogramModel();
+    // await histogramModel.setup({ layer: featureLayer });
+    // await histogramModel.setNumericField("SAT_Score_Average");
+    // histogramModel.setShowMeanOverlay(true);
+    // histogramModel.setShowMedianOverlay(true);
+    // histogramModel.setShowNormalDistOverlay(true);
+    // histogramModel.setShowStandardDevOverlay(true);
+    // histogramModel.setBinColor({
+    //   color: [96, 96, 96, 100],
+    // });
+    // histogramModel.setBinCount(36);
+    // histogramModel.setLegendPosition("bottom");
+    // histogramModel.setDataLabelsVisibility(true);
+    // histogramRef.current.layer = featureLayer;
+    // histogramRef.current.model = histogramModel.getConfig();
   }, []);
 
   // 3. Sync up selection between the bar chart and the map
   const setupBarChartSelection = useCallback((map, view) => {
-    const featureLayerViews = view.layerViews;
-
-    barChartRef.current.addEventListener("arcgisSelectionComplete", (event) => {
-      map.highlightSelect?.remove();
-
-      map.highlightSelect = featureLayerViews.items[0].highlight(
-        event.detail.selectionData.selectionOIDs
-      );
-    });
+    // const featureLayerViews = view.layerViews;
+    // barChartRef.current.addEventListener("arcgisSelectionComplete", (event) => {
+    //   map.highlightSelect?.remove();
+    //   map.highlightSelect = featureLayerViews.items[0].highlight(
+    //     event.detail.selectionData.selectionOIDs
+    //   );
+    // });
   }, []);
 
   // 4. Highlight chart data based on map selection
   const handleMapViewClick = useCallback((event) => {
-    const { view } = event.target;
-
-    let screenPoints = event.detail.screenPoint;
-    view.hitTest(screenPoints).then((response) => {
-      const selectedFeatureOID =
-        response.results[0].graphic.attributes["ObjectId"];
-
-      barChartRef.current.selectionData = {
-        selectionOIDs: [selectedFeatureOID],
-      };
-    });
+    // const { view } = event.target;
+    // let screenPoints = event.detail.screenPoint;
+    // view.hitTest(screenPoints).then((response) => {
+    //   const selectedFeatureOID =
+    //     response.results[0].graphic.attributes["ObjectId"];
+    //   barChartRef.current.selectionData = {
+    //     selectionOIDs: [selectedFeatureOID],
+    //   };
+    // });
   }, []);
 
   // Initialize map and charts when the map view is ready
-  const handleMapViewReady = useCallback(
-    (event) => {
-      const initialize = async () => {
-        const { map, view } = event.target;
+  const handleMapViewReady = useCallback((event) => {
+    const initialize = async () => {
+      const { map, view } = event.target;
 
-        await initBarChart(map, view);
-        await initHistogram(map);
-        setupBarChartSelection(map, view);
-      };
+      await initBarChart(map, view);
+      await initHistogram(map);
+      setupBarChartSelection(map, view);
+    };
 
-      initialize().catch(console.error);
-    },
-    [initBarChart, initHistogram, setupBarChartSelection]
-  );
+    initialize().catch(console.error);
+  }, []);
 
   return (
     <StrictMode>
@@ -144,25 +132,22 @@ const App = () => {
         <div id="tabs-container">
           <calcite-tabs bordered layout="inline">
             <calcite-tab-nav slot="title-group">
-              <calcite-tab-title>
+              <calcite-tab-title selected>
                 <calcite-icon icon="graph-bar" />
                 Bar Chart
               </calcite-tab-title>
-              <calcite-tab-title selected>
+              <calcite-tab-title>
                 <calcite-icon icon="graph-histogram" />
                 Histogram
               </calcite-tab-title>
             </calcite-tab-nav>
             <calcite-tab>
-              <arcgis-chart ref={barChartRef}>
-                <arcgis-charts-action-bar
-                  slot="action-bar"
-                  ref={barChartActionBarRef}
-                ></arcgis-charts-action-bar>
-              </arcgis-chart>
+              {/* <arcgis-chart ref={barChartRef}> */}
+              {/* <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar> */}
+              {/* </arcgis-chart> */}
             </calcite-tab>
-            <calcite-tab selected>
-              <arcgis-chart ref={histogramRef}></arcgis-chart>
+            <calcite-tab>
+              {/* <arcgis-chart ref={histogramRef}></arcgis-chart> */}
             </calcite-tab>
           </calcite-tabs>
         </div>
