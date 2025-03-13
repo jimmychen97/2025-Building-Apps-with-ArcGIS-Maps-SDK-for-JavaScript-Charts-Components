@@ -39,12 +39,13 @@ const App = () => {
   const scatterplotRef = useRef(null);
 
   // 1. Load an existing chart that was configured in Map Viewer, saved on the layer
-  const initBarChart = useCallback(async (map) => {
+  const initBarChart = useCallback(async (map, view) => {
     const featureLayer = await getFeatureLayer(map);
     const barChartConfig = featureLayer.charts[0];
 
     barChartRef.current.layer = featureLayer;
     barChartRef.current.model = barChartConfig;
+    barChartRef.current.view = view;
     // barChartRef.current.hideLoaderAnimation = true;
   }, []);
 
@@ -74,22 +75,7 @@ const App = () => {
     });
   }, []);
 
-  // 4. Enable filter by extent on the bar chart
-  const setupActionBarFilterByExtent = useCallback((view) => {
-    barChartRef.current.view = view;
-
-    barChartActionBarRef.current.addEventListener(
-      "arcgisDefaultActionSelect",
-      (event) => {
-        const { actionId, actionActive } = event.detail;
-        if (actionId === "filterByExtent") {
-          barChartRef.current.filterByExtent = actionActive;
-        }
-      }
-    );
-  }, []);
-
-  // 5. Highlight chart data based on map selection
+  // 4. Highlight chart data based on map selection
   const handleMapViewClick = useCallback((event) => {
     const { view } = event.target;
 
@@ -110,20 +96,14 @@ const App = () => {
       const initialize = async () => {
         const { map, view } = event.target;
 
-        await initBarChart(map);
+        await initBarChart(map, view);
         await initScatterplot(map);
         setupBarChartSelection(map, view);
-        setupActionBarFilterByExtent(view);
       };
 
       initialize().catch(console.error);
     },
-    [
-      initBarChart,
-      initScatterplot,
-      setupBarChartSelection,
-      setupActionBarFilterByExtent,
-    ]
+    [initBarChart, initScatterplot, setupBarChartSelection]
   );
 
   return (
