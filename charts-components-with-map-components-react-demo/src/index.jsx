@@ -1,64 +1,67 @@
 import { StrictMode, useRef, useEffect, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import { createFeatureLayer } from "./functions/create-feature-layer";
 
 import "@arcgis/map-components/components/arcgis-map";
 import "@arcgis/map-components/components/arcgis-home";
 import "@arcgis/map-components/components/arcgis-search";
 import "@arcgis/map-components/components/arcgis-legend";
 
-import { ScatterPlotModel } from "@arcgis/charts-model";
 import { defineCustomElements as defineCalciteElements } from "@esri/calcite-components/dist/loader";
 import { defineCustomElements as defineChartsElements } from "@arcgis/charts-components/dist/loader";
 
+import { ScatterPlotModel } from "@arcgis/charts-model";
+
 import "./index.css";
 
-// define custom elements in the browser, and load the assets from the CDN
+// Define custom elements in the browser, and load the assets from the CDN
 defineCalciteElements();
 defineChartsElements(window, {
   resourcesUrl: "https://js.arcgis.com/charts-components/4.32/assets",
 });
 
+// Function to get and load the feature layer
+const getFeatureLayer = async (map) => {
+  const featureLayer = map.layers.find(
+    (layer) => layer.title === "CollegeScorecard"
+  );
+  await featureLayer.load();
+  return featureLayer;
+};
+
 const App = () => {
   const mapRef = useRef(null);
+
+  // Bar chart and action bar references
   const barChartRef = useRef(null);
-  const scatterplotRef = useRef(null);
   const barChartActionBarRef = useRef(null);
 
-  // load an existing chart that was configured in Map Viewer, saved on the layer
-  const initBarChart = useCallback(async (map) => {
-    const featureLayer = map.layers.find(
-      (layer) => layer.title === "CollegeScorecard"
-    );
-    await featureLayer.load();
+  // Scatterplot reference
+  const scatterplotRef = useRef(null);
 
+  // 1. Load an existing chart that was configured in Map Viewer, saved on the layer
+  const initBarChart = useCallback(async (map) => {
+    const featureLayer = await getFeatureLayer(map);
     const barChartConfig = featureLayer.charts[0];
 
     barChartRef.current.layer = featureLayer;
     barChartRef.current.model = barChartConfig;
-    barChartRef.current.hideLoaderAnimation = true;
+    // barChartRef.current.hideLoaderAnimation = true;
   }, []);
 
-  // use the feature layer from Map Viewer to configure a new chart
+  // 2. Use the feature layer from Map Viewer to configure a new scatterplot chart
   const initScatterplot = useCallback(async (map) => {
-    const featureLayer = map.layers.find(
-      (layer) => layer.title === "CollegeScorecard"
-    );
-    await featureLayer.load();
-
+    const featureLayer = await getFeatureLayer(map);
     const scatterplotModel = new ScatterPlotModel();
     await scatterplotModel.setup({ layer: featureLayer });
 
     await scatterplotModel.setXAxisField("Cost");
     await scatterplotModel.setYAxisField("Earnings");
 
-    const scatterplotConfig = scatterplotModel.getConfig();
-
     scatterplotRef.current.layer = featureLayer;
-    scatterplotRef.current.model = scatterplotConfig;
+    scatterplotRef.current.model = scatterplotModel.getConfig();
   }, []);
 
-  // sync up selection between the bar chart and the map
+  // 3. Sync up selection between the bar chart and the map
   const setupBarChartSelection = useCallback((map, view) => {
     const featureLayerViews = view.layerViews;
 
@@ -71,7 +74,7 @@ const App = () => {
     });
   }, []);
 
-  // enable filter by extent on the bar chart
+  // 4. Enable filter by extent on the bar chart
   const setupActionBarFilterByExtent = useCallback((view) => {
     barChartRef.current.view = view;
 
@@ -86,23 +89,22 @@ const App = () => {
     );
   }, []);
 
-  // highlight chart data base on map selection
+  // 5. Highlight chart data based on map selection
   const handleMapViewClick = useCallback((event) => {
     const { view } = event.target;
 
     let screenPoints = event.detail.screenPoint;
-    view.hitTest(screenPoints).then(getFeatures);
-
-    function getFeatures(response) {
+    view.hitTest(screenPoints).then((response) => {
       const selectedFeatureOID =
         response.results[0].graphic.attributes["ObjectId"];
 
       barChartRef.current.selectionData = {
         selectionOIDs: [selectedFeatureOID],
       };
-    }
+    });
   }, []);
 
+  // Initialize map and charts when the map view is ready
   const handleMapViewReady = useCallback(
     (event) => {
       const initialize = async () => {
@@ -126,46 +128,54 @@ const App = () => {
 
   return (
     <StrictMode>
-      <arcgis-map
-        id="my-map"
-        item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
-        onarcgisViewReadyChange={handleMapViewReady}
-        onarcgisViewClick={handleMapViewClick}
-      >
-        <arcgis-home position="top-right"></arcgis-home>
-        <arcgis-search position="top-left"></arcgis-search>
-        <arcgis-legend
-          position="bottom-left"
-          legend-style="classic"
-        ></arcgis-legend>
-      </arcgis-map>
-      <div id="tabs-container">
-        <calcite-tabs bordered layout="inline">
-          <calcite-tab-nav slot="title-group">
-            <calcite-tab-title selected>
-              <calcite-icon icon="graph-bar" />
-              Bar Chart
-            </calcite-tab-title>
-            <calcite-tab-title>
-              <calcite-icon icon="graph-scatter-plot" />
-              Scatterplot
-            </calcite-tab-title>
-          </calcite-tab-nav>
-          <calcite-tab selected>
-            <arcgis-chart ref={barChartRef}>
-              <arcgis-charts-action-bar
-                slot="action-bar"
-                ref={barChartActionBarRef}
-              ></arcgis-charts-action-bar>
-            </arcgis-chart>
-          </calcite-tab>
-          <calcite-tab>
-            <arcgis-chart ref={scatterplotRef}>
-              <arcgis-charts-action-bar slot="action-bar"></arcgis-charts-action-bar>
-            </arcgis-chart>
-          </calcite-tab>
-        </calcite-tabs>
-      </div>
+      <calcite-shell>
+        <calcite-navigation slot="header" id="nav">
+          <calcite-navigation-logo
+            alt="College Scorecard"
+            slot="logo"
+            heading="U.S. College Scorecard"
+            description="ArcGIS Maps SDK for JavaScript - Charts Components + Map Components"
+          ></calcite-navigation-logo>
+        </calcite-navigation>
+        <arcgis-map
+          id="my-map"
+          item-id="971ab6e1e8f3446c9c20f97f9c6bc226"
+          onarcgisViewReadyChange={handleMapViewReady}
+          onarcgisViewClick={handleMapViewClick}
+        >
+          <arcgis-home position="top-right"></arcgis-home>
+          <arcgis-search position="top-left"></arcgis-search>
+          <arcgis-legend
+            position="bottom-left"
+            legend-style="classic"
+          ></arcgis-legend>
+        </arcgis-map>
+        <div id="tabs-container">
+          <calcite-tabs bordered layout="inline">
+            <calcite-tab-nav slot="title-group">
+              <calcite-tab-title selected>
+                <calcite-icon icon="graph-bar" />
+                Bar Chart
+              </calcite-tab-title>
+              <calcite-tab-title>
+                <calcite-icon icon="graph-scatter-plot" />
+                Scatterplot
+              </calcite-tab-title>
+            </calcite-tab-nav>
+            <calcite-tab selected>
+              <arcgis-chart ref={barChartRef}>
+                <arcgis-charts-action-bar
+                  slot="action-bar"
+                  ref={barChartActionBarRef}
+                ></arcgis-charts-action-bar>
+              </arcgis-chart>
+            </calcite-tab>
+            <calcite-tab>
+              <arcgis-chart ref={scatterplotRef}></arcgis-chart>
+            </calcite-tab>
+          </calcite-tabs>
+        </div>
+      </calcite-shell>
     </StrictMode>
   );
 };

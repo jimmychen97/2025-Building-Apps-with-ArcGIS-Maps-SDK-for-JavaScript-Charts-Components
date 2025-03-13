@@ -6,3 +6,7 @@ Demos for Esri Developer & Technology Summit [charts components technical sessio
 - [React demo with charts components and map components](https://github.com/jimmychen97/2025-Building-Apps-with-ArcGIS-Maps-SDK-for-JavaScript-Charts-Components/tree/main/charts-components-with-map-components-react-demo)
 
 
+## Resources
+
+- [Charts components documentation](https://developers.arcgis.com/javascript/latest/references/charts-components/?path=/docs/charts-components_welcome--docs)
+- [Samples working with frameworks](https://github.com/Esri/jsapi-resources/tree/main/component-samples/charts-components)
