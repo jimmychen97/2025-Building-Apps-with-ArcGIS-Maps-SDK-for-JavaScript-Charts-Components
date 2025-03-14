@@ -7,6 +7,6 @@ Demos for Esri Developer & Technology Summit [charts components technical sessio
 
 
 ## Resources
-
+- [PowerPoint](Building Apps with ArcGIS Maps SDK for JavaScript Charts Components 2025.pdf)
 - [Charts components documentation](https://developers.arcgis.com/javascript/latest/references/charts-components/?path=/docs/charts-components_welcome--docs)
 - [Samples working with frameworks](https://github.com/Esri/jsapi-resources/tree/main/component-samples/charts-components)
